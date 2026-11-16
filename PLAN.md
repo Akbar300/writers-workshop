@@ -92,11 +92,19 @@ printables (blank organizer + draft page with starters, example sheet, editing c
 - [x] Plan
 - [x] `js/checks.js`
 - [x] `js/content.js` (both grades: sentence banks, paragraph activities, 2 fix-it pieces each, 3 writing types with plans, parts, starters, model paragraphs, prompts; home rubric; CUPS checklist)
-- [ ] `js/app.js` item engine, Sentence Gym, Paragraph Builder, Fix My Misses
-- [ ] Write a Piece (plan, draft, check, publish, paper mode)
-- [ ] Fix This Writing
-- [ ] Grown-ups page, rubric, printables
-- [ ] Browser test on phone and desktop sizes, light and dark
+- [x] `js/app.js` item engine, Sentence Gym, Paragraph Builder, Fix My Misses
+- [x] Write a Piece (plan, draft, check, publish, paper mode)
+- [x] Fix This Writing
+- [x] Grown-ups page, rubric, printables
+- [x] Browser test on phone and desktop sizes, light and dark
+- [x] `tools/test.mjs` (content shape, every generated item answerable, checks behavior, banned words)
+
+Build notes (second pass):
+- Wide screens (1100px+) show the whole round as a grid of question cards (2 columns, 3 on very wide
+  screens), each with its own Check; phones show one card at a time with a sticky Check / Next bar.
+- Questions come from per-session shuffled pools, so nothing repeats until a pool is used up.
+- Grade 3 "Type it right" is built from short `sents` (no retype bank), as the handoff notes say.
+- `checks.js`: "reasons" now counts as giving reasons (the Grade 5 opinion model was flagged).
 
 ## Handoff notes (for whoever builds the rest)
 Data shapes in `js/content.js` (`WW_DATA[3]`, `WW_DATA[5]`):

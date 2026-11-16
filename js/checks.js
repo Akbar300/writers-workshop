@@ -91,7 +91,7 @@
 
     /* 9. Opinion writing needs reasons */
     if (o.because) {
-      if (!/\b(because|reason|since)\b/.test(lower)) add('because', 'fix', 'Give reasons for your opinion. Use the word “because”.', '');
+      if (!/\b(because|reasons?|since)\b/.test(lower)) add('because', 'fix', 'Give reasons for your opinion. Use the word “because”.', '');
       else add('because', 'ok', 'You gave reasons.');
     }
 
