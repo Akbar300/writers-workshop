@@ -91,7 +91,7 @@ printables (blank organizer + draft page with starters, example sheet, editing c
 ## Build checklist
 - [x] Plan
 - [x] `js/checks.js`
-- [ ] `js/content.js`
+- [x] `js/content.js` (both grades: sentence banks, paragraph activities, 2 fix-it pieces each, 3 writing types with plans, parts, starters, model paragraphs, prompts; home rubric; CUPS checklist)
 - [ ] `js/app.js` item engine, Sentence Gym, Paragraph Builder, Fix My Misses
 - [ ] Write a Piece (plan, draft, check, publish, paper mode)
 - [ ] Fix This Writing
