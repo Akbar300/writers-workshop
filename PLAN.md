@@ -97,3 +97,37 @@ printables (blank organizer + draft page with starters, example sheet, editing c
 - [ ] Fix This Writing
 - [ ] Grown-ups page, rubric, printables
 - [ ] Browser test on phone and desktop sizes, light and dark
+
+## Handoff notes (for whoever builds the rest)
+Data shapes in `js/content.js` (`WW_DATA[3]`, `WW_DATA[5]`):
+- `sents`: CORRECT sentences for the capitals skill. Make the wrong version yourself: lowercase the
+  first letter, names, places, days, months, titles; the child taps the words that need a capital.
+- `commas`: CORRECT sentences. Remove the commas; the child taps the word that should be followed by one.
+- `blanks.<skill>`: `[sentence with ___, right, [wrong, wrong], why]` → multiple choice.
+- `kinds`: `[text, 'c'|'f'|'r', how to fix]` → complete sentence / fragment / run-on (Grade 3 has no 'r').
+- `combine`: `{a, b, out: [chunks in order], x: [distractor chunks], why}` → tap chunks to build the sentence.
+- `dialogue`: `[right, [wrong...], why]` → pick the correctly punctuated sentence.
+- `retype` (Grade 5 only; Grade 3 is empty, so skip it there): `{wrong, accept: [answers], why}`.
+  Compare after trimming and normalizing curly quotes to straight quotes.
+- `para.order` strips are already in the right order: shuffle them for display.
+- `para.odd.bad` and `para.breaks.br` are 0-based indexes (br = sentences that START a new paragraph).
+- `para.cloze.ans[i]` lists every acceptable word for blank i (a word cannot be used twice).
+- `fix[].clean` is paragraphs → sentences; `fix[].messy` is one string. There is no list of the error
+  positions: get them with a word-level diff between messy and the clean text (case, punctuation,
+  missing apostrophes, homophones).
+- `write.<type>`: `plan` rows are `[id, label, hint, example]`; each `parts[]` has `tip`, `starters`,
+  `model`, and `plan` (the plan ids to show beside that part). `minParas`, `minWords`, `trans`, and
+  `because` feed straight into `WWChecks.run`.
+
+`WWChecks.run(text, {grade, type, minParas, minWords, trans, because})` returns
+`{stats, items: [{id, level: 'fix'|'ok'|'tip', label, detail}], fixes}`.
+Paragraphs are split on line breaks, so the draft box must keep Enter as a new paragraph.
+
+Lessons from the sibling app g5-math-lab (same family, same users) to copy from the start:
+- A right answer on a later try must show as right ("Got it on the second try"), never "Not quite".
+  Only the first try earns XP. An empty Check press is not a try.
+- Next / Try another must NOT scroll the page to the top; keep the scroll position.
+- Light and dark mode; everything readable in both (light boxes must keep dark text in dark mode).
+- iOS print: print a dedicated print container, not the live page.
+- Test on a 390px-wide phone screen: no sideways scroll, big tap targets, no hover-only actions.
+- Save drafts on every keystroke (debounced). Losing a typed story is the worst possible bug here.
