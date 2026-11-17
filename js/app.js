@@ -25,7 +25,11 @@
       { id: 'join', name: 'Joining sentences', icon: '🔗', rule: 'Join two short sentences with because (tells why), so (tells the result), or but (shows a difference). Put a comma before so and but.' },
       { id: 'kinds', name: 'Complete sentence?', icon: '🧩', rule: 'A complete sentence tells WHO (or what) and what they DO or ARE. A fragment is missing one of those parts.' },
       { id: 'dialogue', name: 'Dialogue', icon: '💬', stretch: true, rule: 'Quotation marks hug the exact words someone says. The comma, period, question mark, or exclamation point goes inside the closing mark.' },
-      { id: 'typeit', name: 'Type it right', icon: '⌨️', rule: 'Read the sentence, then type it again with every capital letter and end mark fixed.' }
+      { id: 'typeit', name: 'Type it right', icon: '⌨️', rule: 'Read the sentence, then type it again with every capital letter and end mark fixed.' },
+      { id: 'adj', name: 'Comparing words', icon: '📏', rule: 'Add -er (or use more) to compare two things: taller, more careful. Add -est (or use most) to compare three or more: tallest, most careful. Watch out: good, better, best and bad, worse, worst.' },
+      { id: 'neg', name: 'No double negatives', icon: '🚫', rule: 'Use only ONE no-word in a sentence (not, no, never, nothing, nobody, none). Say “I don\'t have any,” not “I don\'t have none.”' },
+      { id: 'grow', name: 'Grow a sentence', icon: '🌱', rule: 'Make a sentence stronger by adding details that tell who, what kind, where, when, or how.' },
+      { id: 'spell', name: 'Spelling patterns', icon: '🔤', rule: 'Use the patterns you know: drop the silent e before -ing (bake, baking), double the last letter after a short vowel (hop, hopping), and change y to i before -es (baby, babies).' }
     ],
     5: [
       { id: 'caps', name: 'Capitals', icon: '🔠', rule: 'Capitalize proper nouns: names, titles used with a name (Dr. Patel, Coach Rivera), places, buildings, books, days, months, and holidays.' },
@@ -37,7 +41,14 @@
       { id: 'verbs', name: 'Verbs & agreement', icon: '🏃', rule: 'The verb agrees with its subject. Each, every, and everyone are singular: Each of the players has a bottle. Keep the same tense all through a story.' },
       { id: 'poss', name: 'Possessives', icon: '🎒', rule: "One owner: add 's (the dog's bowl). More than one owner ending in s: add only an apostrophe (the dogs' bowls). Plurals without s: children's, people's." },
       { id: 'trans', name: 'Transitions', icon: '🌉', rule: 'Transitions show how ideas connect: however (a change), for example (an example), as a result / therefore (a result), in addition (one more idea), meanwhile (at the same time).' },
-      { id: 'typeit', name: 'Type it right', icon: '⌨️', rule: 'Read the sentence, then type it again with capitals, commas, quotation marks, and end marks fixed.' }
+      { id: 'typeit', name: 'Type it right', icon: '⌨️', rule: 'Read the sentence, then type it again with capitals, commas, quotation marks, and end marks fixed.' },
+      { id: 'tense', name: 'Tense shifts', icon: '⏱️', rule: 'Stay in the same time. If a story starts in the past (walked, said), keep it in the past. Only switch when the time really changes (Yesterday I ran; tomorrow I will rest).' },
+      { id: 'grow', name: 'Expand & combine', icon: '🌱', rule: 'Expand a sentence with details (who, what kind, where, when, why). Combine short choppy sentences into one smooth one. Reduce a wordy sentence by cutting repeated or empty words.' },
+      { id: 'parts', name: 'Conjunctions & adverbs', icon: '🧷', rule: 'Coordinating conjunctions (for, and, nor, but, or, yet, so) join equal ideas. Subordinating ones (because, although, when, since, unless, until) start a part that cannot stand alone. Adverbs tell when, how often, how much, and how sure (soon, rarely, extremely, probably). Interjections show feeling (Wow!).' },
+      { id: 'punct', name: 'Colons & hyphens', icon: '➖', rule: 'A colon separates hours and minutes (7:45) and introduces a list after a complete sentence (Pack three things: a hat, water, and sunscreen.). A hyphen splits a word between syllables at the end of a line (won-derful).' },
+      { id: 'words', name: 'Word choice', icon: '💎', rule: 'Pick precise, vivid words. Replace vague words (good, nice, bad, stuff, thing, went, said) with exact ones (delicious, sprinted, whispered). Show feelings with actions instead of just naming them.' },
+      { id: 'formal', name: 'Formal or informal?', icon: '🎩', rule: 'Formal English is for reports, essays, and letters to adults: full words, no slang (Hello, Mr. Lee. I would like to…). Informal English is for friends and texts (Hey! Wanna…?). School writing should be formal.' },
+      { id: 'spell', name: 'Spelling & word parts', icon: '🔤', rule: 'Use word parts: prefixes (un-, re-, dis-, mis-), suffixes (-ful, -less, -tion, -ment, -able), and rules like dropping the e (hope, hoping), doubling (plan, planned), and y to i (happy, happiness).' }
     ]
   };
   const PARA = [
@@ -47,8 +58,19 @@
     { id: 'p-cloze', name: 'Linking words', icon: '🌉', rule: 'Linking words (transitions) glue ideas together: First, Next, Then, Finally for order; However for a change; For example for an example.' },
     { id: 'p-breaks', name: 'New paragraph?', icon: '↩️', rule: 'Start a new paragraph when the time, the place, the topic, or the speaker changes.' }
   ];
-  const skillList = (g) => SKILLS[g];
-  function skillMeta(g, id) { return SKILLS[g].find((s) => s.id === id) || PARA.find((p) => p.id === id); }
+  const ORG_ALL = [
+    { id: 'o-claim', name: 'Main idea & claim', icon: '🧭', rule: 'A claim (or main idea) is ONE sentence that covers every reason or detail. If a reason does not fit under it, the claim is too narrow.' },
+    { id: 'o-sort', name: 'Sort the details', icon: '🗂️', rule: 'Every detail belongs under the reason it proves. Ask: which reason does this fact show is true?' },
+    { id: 'o-evidence', name: 'Pick the best evidence', icon: '🔬', rule: 'The best evidence is a specific fact, number, example, or quote that proves the point. Opinions, off-topic facts, and vague words are weak evidence.' },
+    { id: 'o-explain', name: 'Explain it', icon: '💡', rule: 'After evidence, explain HOW it proves your point (This shows that…, Because of this…). Do not just repeat the evidence.' },
+    { id: 'o-outline', name: 'Build the outline', icon: '🗺️', rule: 'An essay is a map: introduction with a claim, body paragraphs (one reason each, strongest last or in time order), then a conclusion that restates the claim.' },
+    { id: 'o-intro', name: 'Hooks & conclusions', icon: '🎣', rule: 'A hook grabs the reader (a question, a surprising fact, a quick scene). A conclusion restates the claim in new words and leaves the reader with a final thought. Never start with “This essay is about…”' },
+    { id: 'o-prove', name: 'Prove it from the text', icon: '📜', rule: 'A full-credit reading answer has three parts: Answer the question in a complete sentence, give Evidence from the text (with the paragraph number), and Explain how the evidence proves your answer.' }
+  ];
+  const ORG = ORG_ALL;
+  const orgList = (g) => ORG_ALL.filter((o) => sources(g, o.id).length);
+  const skillList = (g) => SKILLS[g].filter((s) => sources(g, s.id).length);
+  function skillMeta(g, id) { return SKILLS[g].find((s) => s.id === id) || PARA.find((p) => p.id === id) || ORG_ALL.find((p) => p.id === id); }
 
   /* item keys: skill:source:index */
   function sources(g, skill) {
@@ -73,6 +95,8 @@
       case 'p-breaks': each(G.para.breaks, 'p-breaks:x:'); break;
       default: each(G.blanks[skill], skill + ':b:');
     }
+    /* round 3 banks: any skill can also have mc (m), order (o), and type-it (t) items */
+    each((G.mc || {})[skill], skill + ':m:'); each((G.ord || {})[skill], skill + ':o:'); each((G.typ || {})[skill], skill + ':t:');
     return k;
   }
 
@@ -91,6 +115,13 @@
   function makeItem(g, key) {
     const parts = key.split(':'); const skill = parts[0]; const src = parts[1]; const i = +parts[2];
     const G = D[g]; const base = { key, skill, g };
+    if (src === 'm') { const o = G.mc[skill][i];
+      return Object.assign(base, { type: 'mc', prompt: o.p || 'Choose the best answer.', q: o.q, show: o.show, choices: o.keep ? [o.r].concat(o.w).sort((a, b) => o.keep.indexOf(a) - o.keep.indexOf(b)) : shuffle([o.r].concat(o.w)), noShuffle: !!o.keep, layout: o.layout, answer: o.r, why: o.why }); }
+    if (src === 'o') { const o = G.ord[skill][i]; let chunks;
+      do { chunks = shuffle(o.strips); } while (sameArr(chunks, o.strips));
+      return Object.assign(base, { type: 'build', vertical: true, prompt: o.p || 'Tap them in the right order.', title: o.t, chunks, answer: o.strips, why: o.why }); }
+    if (src === 't') { const o = G.typ[skill][i];
+      return Object.assign(base, { type: 'type', prompt: o.p || 'Type this sentence correctly.', wrong: o.wrong, accept: o.accept, why: o.why }); }
     if (skill === 'caps') {
       const c = capsWrong(G.sents[i]);
       return Object.assign(base, { type: 'tap', prompt: 'Tap every word that needs a capital letter.', words: c.words, fixed: c.t, targets: c.targets,
@@ -182,7 +213,7 @@
     return { messy: m, clean: c, errs, sents: sents.map((x) => x.s), paraStarts: starts.slice(1), aligned: m.length === c.length };
   }
 
-  const Engine = { SKILLS, PARA, skillList, skillMeta, sources, makeItem, check, correctResponse, fixDiff, norm, shuffle, tokens };
+  const Engine = { SKILLS, PARA, ORG, orgList, skillList, skillMeta, sources, makeItem, check, correctResponse, fixDiff, norm, shuffle, tokens };
   root.WWEngine = Engine;
   if (typeof module !== 'undefined' && module.exports) module.exports = Engine;
   if (typeof document === 'undefined') return;
@@ -245,7 +276,7 @@
 
   /* ------------------------------------------------------------------ shell */
   const NAV = [
-    ['home', '🏠', 'Home', 'Home'], ['gym', '🏋️', 'Sentence Gym', 'Gym'], ['para', '🧱', 'Paragraph Builder', 'Paragraph'],
+    ['home', '🏠', 'Home', 'Home'], ['gym', '🏋️', 'Sentence Gym', 'Gym'], ['para', '🧱', 'Paragraph Builder', 'Para'], ['org', '🧭', 'Organize It', 'Organize'],
     ['write', '✍️', 'Write a Piece', 'Write'], ['fix', '🔍', 'Fix This Writing', 'Fix It'], ['misses', '🔁', 'Fix My Misses', 'Misses'], ['grown', '👪', 'Grown-ups', 'Adults']
   ];
   const app = $('#app'); const view = $('#view');
@@ -280,7 +311,7 @@
 
   /* ------------------------------------------------------------------ router */
   let R = null; /* current round */
-  const routes = { home: renderHome, gym: renderGym, para: renderPara, misses: renderMisses, write: renderWrite, fix: renderFix, grown: renderGrown };
+  const routes = { home: renderHome, gym: renderGym, para: renderPara, org: renderOrg, misses: renderMisses, write: renderWrite, fix: renderFix, grown: renderGrown };
   function route() {
     flushSave();
     const h = (location.hash || '').replace(/^#\/?/, '') || 'home';
@@ -323,6 +354,8 @@
       card('misses', '🔁', 'Fix My Misses', p.misses.length ? plural(p.misses.length, 'question') + ' to fix. Get each right twice to clear it.' : 'Nothing to fix right now. Nice work!', p.misses.length ? 'Review ' + Math.min(6, p.misses.length) : 'All clear', p.misses.length ? 'warm' : '', '<div class="c-extra big-n"><b>' + p.misses.length + '</b><span>' + (p.misses.length === 1 ? 'question waiting' : 'questions waiting') + '</span></div>') +
       card('para', '🧱', 'Paragraph Builder', 'Order sentences, find the one that does not belong, add linking words.', 'Build', '',
         '<div class="c-extra">' + PARA.map((x) => '<span class="c-chip">' + x.icon + ' ' + esc(x.name) + '</span>').join('') + '</div>') +
+      card('org', '🧭', 'Organize It', 'Line up your thinking: claims, reasons, evidence, outlines, and proof from the text.', 'Organize', '',
+        '<div class="c-extra">' + orgList(S.grade).map((x) => '<span class="c-chip">' + x.icon + ' ' + esc(x.name) + '</span>').join('') + '</div>') +
       card('write', '✍️', 'Write a Piece', cur ? 'Keep going: ' + esc(D[S.grade].write[cur.type].name) + ' about “' + esc(cur.topic) + '”' : 'Plan it, draft it part by part, check it, publish it.', cur ? 'Continue' : 'Start writing', '', '<div class="c-extra">' + Object.keys(D[S.grade].write).map((t) => '<span class="c-chip">' + D[S.grade].write[t].icon + ' ' + esc(D[S.grade].write[t].name) + '</span>').join('') + '<span class="small muted">' + p.drafts.filter((d) => d.done).length + ' finished in your folder</span></div>') +
       card('fix', '🔍', 'Fix This Writing', 'A messy draft needs your editing eyes. Find every mistake.', 'Edit', '',
         '<div class="c-extra">' + D[S.grade].fix.map((f) => '<span class="c-chip">' + (p.fixDone[f.id] ? '✅ ' : '📝 ') + esc(f.t) + '</span>').join('') + '</div>') +
@@ -360,6 +393,20 @@
       '<div class="tiles">' + PARA.map((s) => tile(s, (P().count[s.id] || 0))).join('') + '</div></section>';
     $('#mixed').addEventListener('click', () => startPara(null));
     $$('.tile').forEach((t) => t.addEventListener('click', () => startPara(t.dataset.s)));
+  }
+  function renderOrg() {
+    const L = orgList(S.grade);
+    view.innerHTML = '<section class="page"><div class="page-head"><h1>🧭 Organize It</h1><p class="muted">Good writers sort their thinking before they write: one claim, reasons that fit it, evidence for each reason, and an explanation that ties it together.</p></div>' +
+      '<button class="hero" id="mixed"><span class="hero-ic">▶</span><span><b>Mixed organizing round</b><small>One of each, ' + Math.min(6, L.length) + ' questions</small></span></button>' +
+      '<div class="tiles">' + L.map((s) => tile(s, (P().count[s.id] || 0))).join('') + '</div></section>';
+    $('#mixed').addEventListener('click', () => startOrg(null));
+    $$('.tile').forEach((t) => t.addEventListener('click', () => startOrg(t.dataset.s)));
+  }
+  function startOrg(kind) {
+    const keys = [];
+    if (kind) { const n = Math.min(4, sources(S.grade, kind).length); for (let k = 0; k < n; k++) { const key = drawKey(kind, keys); if (key) keys.push(key); } }
+    else shuffle(orgList(S.grade)).slice(0, 6).forEach((p) => { const k = drawKey(p.id, keys); if (k) keys.push(k); });
+    startRound(kind ? 'org:' + kind : 'org', keys, kind ? skillMeta(S.grade, kind).name : 'Organizing round');
   }
   function renderMisses() {
     const m = P().misses;
@@ -430,7 +477,7 @@
     if (max <= 52) return 'grid2' + (max > 13 ? ' gw' : '');
     return 'col';
   }
-  const BIG = /^(p-|dialogue)/;
+  const BIG = /^(p-|o-|dialogue)/;
   function gridCols() {
     const big = R.items.some((e) => BIG.test(e.it.skill) || e.it.type === 'build' || e.it.type === 'type');
     if (R.items.length <= 2) return R.items.length;
@@ -1028,7 +1075,7 @@
   function loopPayload(g) {
     const p = S.g[g]; const tags = {}; const labels = {};
     const put = (id, arr, label) => { if (!arr || !arr.length) return; tags[id] = { m: arr.filter((x) => !x).length, h: arr.filter((x) => x).length, r: arr.slice(-6), last: isoToday() }; labels[id] = label; };
-    skillList(g).concat(PARA).forEach((sk) => put('ww_' + sk.id, (p.stats[sk.id] || []).map((x) => (x ? 1 : 0)), 'Writing: ' + sk.name));
+    skillList(g).concat(PARA, orgList(g)).forEach((sk) => put('ww_' + sk.id, (p.stats[sk.id] || []).map((x) => (x ? 1 : 0)), 'Writing: ' + sk.name));
     Object.keys(p.wchk || {}).forEach((id) => put('ww_w_' + id, p.wchk[id], 'Own writing: ' + (CHK_NAMES[id] || id)));
     const open = {}; p.misses.forEach((x) => { const sk = x.k.split(':')[0]; open[sk] = (open[sk] || 0) + 1; });
     return { app: 'ww', v: 1, g, d: isoToday(), tags, labels, open, pieces: p.drafts.filter((d) => d.done).length };
@@ -1050,7 +1097,7 @@
       [3, 5].map((x) => '<label class="own"><span>Grade ' + x + ' writer</span><input data-name="' + x + '" type="text" maxlength="30" value="' + esc(S.names[x] || '') + '" placeholder="First name"></label>').join('') +
       '<div class="gu-stats"><div><b>' + p.xp + '</b><span>XP</span></div><div><b>' + p.rounds + '</b><span>rounds</span></div><div><b>' + streak() + '</b><span>day streak</span></div><div><b>' + p.drafts.filter((d) => d.done).length + '</b><span>pieces</span></div></div></div>' +
       '<div class="gu-card span2"><h2>Skill progress</h2><p class="small muted">First-try accuracy over the last 12 answers per skill. Open misses come back in Fix My Misses until answered right twice.</p><div class="tbl-wrap"><table class="prog-t"><thead><tr><th>Skill</th><th></th><th>First try</th><th>Answered</th><th>Misses</th></tr></thead><tbody>' +
-      skillList(g).map(rowFor).join('') + PARA.map(rowFor).join('') + '</tbody></table></div></div>' +
+      skillList(g).map(rowFor).join('') + PARA.map(rowFor).join('') + orgList(g).map(rowFor).join('') + '</tbody></table></div></div>' +
       '<div class="gu-card span2"><h2>Writing folder</h2>' + (drafts.length ? '<div class="folder">' + drafts.map((d) => {
         const w = G.write[d.type]; const tot = D.rubric.reduce((s, r) => s + (d.rubric[r[0]] || 0), 0); const open = GU.open === d.id;
         return '<div class="fold-i' + (open ? ' open' : '') + '"><span class="tc-ic">' + w.icon + '</span><span class="fi-t"><b>' + esc(d.title || d.topic) + '</b><small>' + esc(w.name) + ' · ' + (d.done ? 'finished' : 'in progress') + ' · ' + new Date(d.updated).toLocaleDateString() + (d.mode === 'paper' ? ' · on paper' : ' · ' + plural(wordCount(draftText(d)), 'word')) + (tot ? ' · rubric ' + tot + '/16' : '') + '</small></span><button class="btn small-btn" data-rb="' + d.id + '">' + (open ? 'Close' : 'Read & score') + '</button></div>' +

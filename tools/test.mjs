@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = { window: {}, globalThis: null, console };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['js/content.js', 'js/content-more.js', 'js/units.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
+for (const f of ['js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/units.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
 const D = ctx.WW_DATA; const C = ctx.WWChecks; const E = ctx.WWEngine;
 
 let pass = 0; const fails = [];
@@ -55,13 +55,29 @@ for (const g of [3, 5]) {
     ok(r.fixes === 0, L + t + ' model passes its own checks: ' + r.items.filter((x) => x.level === 'fix').map((x) => x.id).join(','));
   }
 }
+/* round 3 banks */
+for (const g of [3, 5]) {
+  const G = D[g]; const L = 'G' + g + ' ';
+  for (const [k, arr] of Object.entries(G.mc || {})) arr.forEach((o, i) => {
+    ok(o.r && Array.isArray(o.w) && o.w.length >= 1 && !o.w.includes(o.r) && uniq([o.r, ...o.w]), L + 'mc ' + k + i + ' choices unique, answer not a distractor');
+    ok(o.why && o.why.length > 5 && o.p, L + 'mc ' + k + i + ' has prompt and why');
+    ok(!o.q || !o.q.includes('___') || (o.q.match(/___/g) || []).length === 1, L + 'mc ' + k + i + ' one blank');
+  });
+  for (const [k, arr] of Object.entries(G.ord || {})) arr.forEach((o, i) => ok(o.strips.length >= 3 && uniq(o.strips) && o.why, L + 'ord ' + k + i));
+  ok(E.skillList(g).every((s) => E.sources(g, s.id).length >= 8), L + 'every Gym skill has 8+ items');
+  ok(E.orgList(g).length >= 5, L + 'Organize It has 5+ skills');
+}
+ok(E.orgList(5).length === 7, 'G5 has all 7 Organize It skills');
+ok(D[5].write.essay && D[5].write.response && D[3].write.response, 'new writing types present');
+const tooFew = []; for (const g of [3, 5]) E.skillList(g).concat(E.PARA, E.orgList(g)).forEach((s) => { const n = E.sources(g, s.id).length; if (n < 15) tooFew.push('G' + g + ' ' + s.id + ':' + n); });
+console.log('Skills under 15 items:', tooFew.join(', ') || 'none');
 ok(D.rubric.length === 4 && D.rubric.every((r) => r[2].length === 4), 'rubric is 4 x 4');
 ok(D.cups.length === 4, 'CUPS has 4 rows');
 
 /* ---------- engine: every item in every skill is answerable */
 let items = 0;
 for (const g of [3, 5]) {
-  const skills = E.SKILLS[g].map((s) => s.id).concat(E.PARA.map((p) => p.id));
+  const skills = E.SKILLS[g].map((s) => s.id).concat(E.PARA.map((p) => p.id), E.orgList(g).map((p) => p.id));
   for (const s of skills) {
     const keys = E.sources(g, s);
     ok(keys.length >= 2, 'G' + g + ' skill ' + s + ' has items (' + keys.length + ')');
@@ -109,7 +125,7 @@ for (const g of [3, 5]) {
 }
 
 /* ---------- public repo hygiene */
-const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/content-more.js', 'js/units.js', 'js/checks.js', 'PLAN.md', 'README.md'];
+const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/units.js', 'js/checks.js', 'PLAN.md', 'README.md'];
 const banned = new RegExp(['ali' + 'ya', 'ars' + 'lan', 'bo' + 'mb'].join('|'), 'i');
 for (const f of files) { const p = path.join(ROOT, f); if (fs.existsSync(p)) ok(!banned.test(fs.readFileSync(p, 'utf8')), 'no private names or banned words in ' + f); }
 

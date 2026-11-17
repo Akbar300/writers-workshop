@@ -46,7 +46,7 @@ body.focus .view { padding-bottom: 0; }
 
 .nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; display: flex; background: var(--surface); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); height: calc(var(--navh) + env(safe-area-inset-bottom)); }
 body.focus .nav { display: none; }
-.nav-i { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .68rem; font-weight: 700; color: var(--muted); position: relative; }
+.nav-i { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-size: .64rem; letter-spacing: -.01em; white-space: nowrap; font-weight: 700; color: var(--muted); position: relative; }
 .nav-i .ni-ic { font-size: 1.3rem; line-height: 1; }
 .nav-i .lg { display: none; }
 .nav-i.on { color: var(--blue); }
@@ -161,7 +161,7 @@ body.focus .nav { display: none; }
 .context { display: grid; gap: 8px; }
 .context span { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; font-size: 1.15rem; }
 .context b { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--blue-soft); color: var(--blue); font-size: .85rem; margin-right: 6px; }
-.show-box { background: var(--surface2); border-left: 5px solid var(--teal); border-radius: 10px; padding: 12px 16px; font-size: 1.1rem; }
+.show-box { white-space: pre-line; background: var(--surface2); border-left: 5px solid var(--teal); border-radius: 10px; padding: 12px 16px; font-size: 1.1rem; }
 .q { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; font-size: 1.5rem; line-height: 1.6; box-shadow: var(--shadow); }
 .blank { display: inline-block; min-width: 3.2em; border-bottom: 3px solid var(--blue); text-align: center; padding: 0 .2em; margin: 0 .1em; color: var(--blue); font-weight: 800; }
 .blank.ok { color: var(--ok); border-color: var(--ok); }

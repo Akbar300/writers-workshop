@@ -125,6 +125,24 @@ Round 2 (Nov 17, 2026, Claude review of the first build):
   logged because drafts are often unfinished). Weekend Loop imports it in Grown-ups → Miss log.
 - [x] Small fixes: Grown-ups skill table fits a phone; non-word distractor "youre" replaced.
 
+### Round 3 (Nov 17, 2026): every grade-level skill, Organize It, much bigger banks
+- [x] Generic banks: any skill can have `G.mc[skill]` (multiple choice: `{p, q?, show?, r, w, why, keep?, layout?}`),
+  `G.ord[skill]` (put in order: `{t, p, strips, why}`), and `G.typ[skill]` (type it: `{p, wrong, accept, why}`).
+  Keys are `skill:m:i`, `skill:o:i`, `skill:t:i`. Skills and Organize It tiles only show when the grade has items.
+- [x] New Grade 5 Gym skills: Tense shifts (5.LU.1D), Expand & combine (5.LU.1A), Conjunctions & adverbs (5.LU.1B-C),
+  Colons & hyphens (5.LU.2A-C), Word choice (5.W.2ii, 5.W.3A), Formal or informal, Spelling & word parts (5.FFW.2).
+- [x] New Grade 3 Gym skills: Comparing words (3.LU.1C), No double negatives (3.LU.1F), Grow a sentence (3.LU.1A),
+  Spelling patterns (3.LU.2D).
+- [x] Organize It (new section, `#/org`): Main idea & claim, Sort the details, Pick the best evidence, Explain it,
+  Build the outline, Hooks & conclusions, Prove it from the text (answer + evidence with paragraph number + explain).
+  Grade 3 gets every one except Explain it.
+- [x] New writing types: Grade 5 Multi-paragraph Essay (5 paragraphs, 220+ words) and Respond to Reading (both grades).
+- [x] Bigger banks for every round 1-2 skill (Grade 5 now about 25-45 items per skill), 2 more Grade 5 Fix-its.
+- Files: `js/content-r3-g5.js` (new Gym skills), `js/content-r3-g5b.js` (Organize It), `js/content-r3-g5c.js`
+  (bank top-ups, essay and response types, Fix-its), `js/content-r3-g3.js` (Grade 3). ALWAYS append.
+- Next: more Grade 3 Organize It items; an optional AI writing coach (server function on Vercel, rubric score +
+  one praise + one fix, never rewrites) if a grown-up adds an API key.
+
 ## Handoff notes (for whoever builds the rest)
 Data shapes in `js/content.js` (`WW_DATA[3]`, `WW_DATA[5]`):
 - `sents`: CORRECT sentences for the capitals skill. Make the wrong version yourself: lowercase the
