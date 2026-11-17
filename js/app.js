@@ -197,13 +197,14 @@
 
   /* ------------------------------------------------------------------ storage */
   const KEY = 'ww.v1';
-  function blankGrade() { return { xp: 0, stats: {}, count: {}, misses: [], drafts: [], cur: null, fixDone: {}, rounds: 0, recent: [] }; }
+  function blankGrade() { return { xp: 0, stats: {}, count: {}, misses: [], drafts: [], cur: null, fixDone: {}, rounds: 0, recent: [], wchk: {} }; }
   function load() {
     let s = null; try { s = JSON.parse(localStorage.getItem(KEY)); } catch (e) { s = null; }
     if (!s || typeof s !== 'object') s = {};
     s.v = 1; s.grade = s.grade === 3 || s.grade === 5 ? s.grade : null;
     s.names = s.names || { 3: '', 5: '' }; s.days = Array.isArray(s.days) ? s.days : [];
     s.g = s.g || {}; [3, 5].forEach((g) => { s.g[g] = Object.assign(blankGrade(), s.g[g] || {}); });
+    s.pace = s.pace || { 3: {}, 5: {} }; [3, 5].forEach((g) => { s.pace[g] = s.pace[g] || {}; });
     return s;
   }
   let S = load();
@@ -232,6 +233,15 @@
   }
   function addMiss(key) { const m = P().misses; const f = m.find((x) => x.k === key); if (f) f.n = 0; else m.push({ k: key, n: 0, t: Date.now() }); }
   const writerName = () => (S.names[S.grade] || '').trim();
+
+  /* class units (js/units.js): the unit that is current today for each subject, plus the grown-up's pacing nudge */
+  const isoToday = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  function currentUnits(g) {
+    const by = {}; ((root.WW_UNITS || {})[g] || []).forEach((u) => { (by[u.subj] = by[u.subj] || []).push(u); });
+    const t = isoToday(); const sh = S.pace[g] || {};
+    return Object.keys(by).map((subj) => { const list = by[subj]; let k = 0; list.forEach((u, j) => { if (u.from <= t) k = j; });
+      k = Math.max(0, Math.min(list.length - 1, k + (sh[subj] || 0))); return { subj, u: list[k], idx: k, n: list.length }; });
+  }
 
   /* ------------------------------------------------------------------ shell */
   const NAV = [
@@ -730,7 +740,11 @@
       h += '<h1>What kind of writing?</h1><div class="type-cards">' + Object.keys(G.write).map((t) => '<button class="type-card big" data-t="' + t + '"><span class="tc-ic">' + G.write[t].icon + '</span><span><b>' + esc(G.write[t].name) + '</b><small>' + esc(G.write[t].blurb) + '</small></span></button>').join('') + '</div>';
     } else if (WZ.step === 2) {
       const w = G.write[WZ.type];
-      h += '<h1>What will you write about?</h1><p class="muted">' + w.icon + ' ' + esc(w.name) + '. Pick an idea or type your own.</p><div class="choices grid2 gw prompts">' +
+      const cls = currentUnits(S.grade).filter((c) => c.u.p[WZ.type]);
+      h += '<h1>What will you write about?</h1><p class="muted">' + w.icon + ' ' + esc(w.name) + '. Pick an idea or type your own.</p>' +
+        (cls.length ? '<h2 class="unit-h">📚 From class right now</h2><div class="choices grid2 gw prompts">' + cls.map((c) => { const pr = c.u.p[WZ.type];
+          return '<button class="choice unit' + (WZ.topic === pr ? ' sel' : '') + '" data-pr="' + esc(pr) + '"><span class="c-t"><small class="u-tag">' + esc(c.subj) + ' · ' + esc(c.u.name) + '</small>' + esc(pr) + '</span></button>'; }).join('') + '</div><h2 class="unit-h">💡 More ideas</h2>' : '') +
+        '<div class="choices grid2 gw prompts">' +
         w.prompts.map((pr) => '<button class="choice' + (WZ.topic === pr ? ' sel' : '') + '" data-pr="' + esc(pr) + '"><span class="c-t">' + esc(pr) + '</span></button>').join('') + '</div>' +
         '<label class="own"><span>My own idea</span><input id="own" type="text" maxlength="90" placeholder="Type a topic" value="' + esc(WZ.own || '') + '"></label>';
     } else {
@@ -836,12 +850,32 @@
   }
 
   function checkOpts(d) { const w = W(d); return { grade: S.grade, type: d.type, minParas: w.minParas, minWords: w.minWords, trans: w.trans, because: !!w.because }; }
+  /* Quick wins first: conventions, then sentences, then size and structure. Shown 3 at a time. */
+  const FIX_ORDER = ['caps', 'i', 'end', 'slips', 'double', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers', 'because', 'trans', 'paras', 'words', 'variety'];
+  const BATCH = 3;
   function checksHtml(d) {
     const r = root.WWChecks.run(draftText(d), checkOpts(d)); const w = W(d);
-    const order = { fix: 0, tip: 1, ok: 2 }; const items = r.items.slice().sort((a, b) => order[a.level] - order[b.level]);
-    return '<div class="stats-bar"><div><b>' + r.stats.words + '</b><span>/ ' + w.minWords + ' words</span></div><div><b>' + r.stats.paragraphs + '</b><span>/ ' + w.minParas + ' paragraphs</span></div><div><b>' + r.stats.sentences + '</b><span>sentences</span></div></div>' +
-      '<p class="check-sum ' + (r.fixes ? 'warn' : 'good') + '">' + (r.fixes ? '🔧 ' + plural(r.fixes, 'thing') + ' to fix. Edit on the ' + (window.innerWidth >= 1100 ? 'right' : 'boxes below') + '; the list updates as you type.' : '✅ The computer found nothing to fix. Now read it out loud!') + '</p>' +
-      '<ul class="checks">' + items.map((x) => '<li class="ck ' + x.level + '"><span class="ck-i">' + (x.level === 'fix' ? '🔧' : x.level === 'tip' ? '💡' : '✅') + '</span><span><b>' + esc(x.label) + '</b>' + (x.detail ? '<small>' + esc(x.detail) + '</small>' : '') + '</span></li>').join('') + '</ul>';
+    const rank = (x) => { const i = FIX_ORDER.indexOf(x.id); return i < 0 ? 99 : i; };
+    const fixes = r.items.filter((x) => x.level === 'fix').sort((a, b) => rank(a) - rank(b));
+    const oks = r.items.filter((x) => x.level === 'ok'); const tips = r.items.filter((x) => x.level === 'tip');
+    const li = (x) => '<li class="ck ' + x.level + '"><span class="ck-i">' + (x.level === 'fix' ? '🔧' : x.level === 'tip' ? '💡' : '✅') + '</span><span><b>' + esc(x.label) + '</b>' + (x.detail ? '<small>' + esc(x.detail) + '</small>' : '') + '</span></li>';
+    const stats = '<div class="stats-bar"><div><b>' + r.stats.words + '</b><span>/ ' + w.minWords + ' words</span></div><div><b>' + r.stats.paragraphs + '</b><span>/ ' + w.minParas + ' paragraphs</span></div><div><b>' + r.stats.sentences + '</b><span>sentences</span></div></div>';
+    const where = window.innerWidth >= 1100 ? 'on the right' : 'in the boxes below';
+    if (fixes.length) {
+      const now = fixes.slice(0, BATCH); const later = fixes.length - now.length;
+      return stats + '<p class="check-sum warn">🔧 ' + (now.length === 1 ? 'Fix this one thing' : 'Fix these ' + now.length + ' things') + ' ' + where + '. The list updates as you type.</p>' +
+        '<ul class="checks">' + now.map(li).join('') + '</ul>' +
+        '<div class="ck-more">' + (later ? '<span>🔒 ' + plural(later, 'more fix', 'more fixes') + ' will show up after these.</span>' : '<span>🏁 This is the last batch!</span>') + (oks.length ? '<span>✅ ' + plural(oks.length, 'thing') + ' already good</span>' : '') + '</div>';
+    }
+    return stats + '<p class="check-sum good">✅ The computer found nothing to fix. Now read it out loud!</p><ul class="checks">' + tips.map(li).join('') + oks.map(li).join('') + '</ul>';
+  }
+  /* First check of each typed draft feeds the writing tags (for the Weekend Loop log). */
+  function logChecks(d) {
+    if (d.mode === 'paper' || d.chkLogged || !draftText(d).trim()) return;
+    const r = root.WWChecks.run(draftText(d), checkOpts(d)); const L = P().wchk || (P().wchk = {});
+    const LOGGED = ['caps', 'i', 'end', 'slips', 'double', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers'];
+    r.items.forEach((x) => { if (x.level === 'tip' || LOGGED.indexOf(x.id) < 0) return; const a = L[x.id] || (L[x.id] = []); a.push(x.level === 'ok' ? 1 : 0); if (a.length > 6) a.shift(); });
+    d.chkLogged = true; saveSoon();
   }
   function manualHtml(d, list, store, title) {
     return '<div class="manual"><h3>' + title + '</h3>' + list.map((m, i) => { const label = Array.isArray(m) ? '<b>' + esc(m[0]) + ' · ' + esc(m[1]) + '</b><small>' + esc(m[2]) + '</small>' : esc(m); const on = !!d[store][i];
@@ -859,7 +893,7 @@
     }
     view.innerHTML = '<section class="wr">' + stepper(d) + '<div class="check-grid"><div class="c-left">' + left + '</div><div class="c-right">' + right + '</div></div>' +
       '<div class="act-foot plain"><div class="fb small muted">Saved as you type.</div><div class="btns"><button class="btn ghost" id="prev">← Draft</button><button class="btn primary" id="pub">Publish →</button></div></div></section>';
-    bindStepper(d);
+    bindStepper(d); logChecks(d);
     let t = null;
     $$('[data-pe]').forEach((ta) => {
       const fit = () => { ta.style.height = 'auto'; ta.style.height = (ta.scrollHeight + 4) + 'px'; }; fit();
@@ -987,6 +1021,21 @@
   }
   function keepScroll(fn) { const y = window.scrollY; fn(); window.scrollTo(0, y); }
 
+  /* ------------------------------------------------------------------ Weekend Loop feed */
+  /* A paste code for the home Weekend Loop app (a separate page with its own database).
+     Its Grown-ups page imports this and replaces its ww_* writing tags with these, so pasting twice is harmless. */
+  const CHK_NAMES = { caps: 'capital letters', i: 'capital I', end: 'end marks', slips: 'common slips', double: 'doubled words', space: 'spacing', quotes: 'quotation marks', dialogue: 'dialogue punctuation', andthen: '"and then" chains', long: 'very long sentences', openers: 'same sentence openers', because: 'reasons with because', trans: 'linking words', paras: 'paragraphs', words: 'length', variety: 'sentence variety' };
+  function loopPayload(g) {
+    const p = S.g[g]; const tags = {}; const labels = {};
+    const put = (id, arr, label) => { if (!arr || !arr.length) return; tags[id] = { m: arr.filter((x) => !x).length, h: arr.filter((x) => x).length, r: arr.slice(-6), last: isoToday() }; labels[id] = label; };
+    skillList(g).concat(PARA).forEach((sk) => put('ww_' + sk.id, (p.stats[sk.id] || []).map((x) => (x ? 1 : 0)), 'Writing: ' + sk.name));
+    Object.keys(p.wchk || {}).forEach((id) => put('ww_w_' + id, p.wchk[id], 'Own writing: ' + (CHK_NAMES[id] || id)));
+    const open = {}; p.misses.forEach((x) => { const sk = x.k.split(':')[0]; open[sk] = (open[sk] || 0) + 1; });
+    return { app: 'ww', v: 1, g, d: isoToday(), tags, labels, open, pieces: p.drafts.filter((d) => d.done).length };
+  }
+  function loopCode(g) { const j = JSON.stringify(loopPayload(g)); return 'WW1.' + btoa(unescape(encodeURIComponent(j))); }
+  root.WWLoop = { payload: loopPayload, code: loopCode };
+
   /* ------------------------------------------------------------------ grown-ups */
   let GU = { open: null };
   function renderGrown() {
@@ -1010,6 +1059,12 @@
       '<div class="gu-card"><h2>Printables</h2><p class="small muted">US Letter. Light headers, dark text, made to fill the page.</p><div class="seg wide" role="group">' + Object.keys(G.write).map((t) => '<button data-pt="' + t + '" class="' + (t === ptype ? 'on' : '') + '">' + G.write[t].icon + ' ' + esc(G.write[t].name.split(' /')[0]) + '</button>').join('') + '</div>' +
       '<div class="pr-btns"><button class="btn" data-pr="org">🗒️ Plan sheet + draft page</button><button class="btn" data-pr="ex">📄 Example sheet</button><button class="btn" data-pr="chk">✅ Editing checklist</button>' +
       G.fix.map((f) => '<button class="btn" data-prf="' + f.id + '">🔍 Fix-it: ' + esc(f.t) + ' + key</button>').join('') + '</div></div>' +
+      '<div class="gu-card"><h2>Class units</h2><p class="small muted">Write a Piece offers a prompt from each of these units. Dates are estimates from the FCPS calendar; step a subject when class moves.</p><table class="unit-t">' +
+      currentUnits(g).map((c) => '<tr><td><b>' + esc(c.subj) + '</b><span class="small">' + esc(c.u.name) + '</span></td><td class="nw"><button class="btn small-btn" data-pace="' + esc(c.subj) + '|-1"' + (c.idx <= 0 ? ' disabled' : '') + '>Earlier</button><button class="btn small-btn" data-pace="' + esc(c.subj) + '|1"' + (c.idx >= c.n - 1 ? ' disabled' : '') + '>Later</button></td></tr>').join('') + '</table></div>' +
+      '<div class="gu-card"><h2>Send to Weekend Loop</h2><p class="small muted">Puts ' + G.label + ' writing results into the Weekend Loop miss log, so weak skills show up in its Sunday summary and the next printouts. Copy the code, then in Weekend Loop open Grown-ups → Miss log → Import from Writer\'s Workshop.</p>' +
+      (function () { const pl = loopPayload(g); const n = Object.keys(pl.tags).length; const weak = Object.keys(pl.tags).filter((t) => pl.tags[t].r.slice(-3).indexOf(0) >= 0).map((t) => pl.labels[t].replace(/^[^:]+: /, ''));
+        return '<p class="small">' + (n ? plural(n, 'skill') + ' to send' + (weak.length ? ' · needs work: ' + esc(weak.slice(0, 6).join(', ')) + (weak.length > 6 ? '…' : '') : ' · nothing weak right now') : 'Nothing to send yet. Do a few rounds first.') + '</p>'; })() +
+      '<textarea id="loopcode" class="code-box" readonly rows="3">' + esc(loopCode(g)) + '</textarea><div class="pr-btns"><button class="btn" id="loopcopy">📋 Copy code</button></div></div>' +
       '<div class="gu-card"><h2>About the standards</h2><p class="small">Practice is built on the Virginia 2024 English Standards of Learning for Grades 3 and 5: writing modes (narrative, opinion, informational), organization and composition, and usage and mechanics. The 4-point home rubric scores focus and organization, ideas and details, sentences and word choice, and conventions. It is a home guide, not an official school rubric.</p></div>' +
       '<div class="gu-card"><h2>Reset</h2><p class="small muted">Clears progress on this device. Cannot be undone.</p><div class="pr-btns"><button class="btn danger" id="rs1">Reset ' + G.label + '</button><button class="btn danger" id="rsall">Reset everything</button></div></div>' +
       '</div></section>';
@@ -1020,6 +1075,9 @@
     $$('[data-pt]').forEach((b) => b.addEventListener('click', () => { GU.ptype = b.dataset.pt; keepScroll(renderGrown); }));
     $$('[data-pr]').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.pr; if (k === 'org') printOrganizer(g, ptype); if (k === 'ex') printExamples(g, ptype); if (k === 'chk') printChecklist(g); }));
     $$('[data-prf]').forEach((b) => b.addEventListener('click', () => printFixIt(g, b.dataset.prf)));
+    $$('[data-pace]').forEach((b) => b.addEventListener('click', () => { const k = b.dataset.pace.split('|'); S.pace[g][k[0]] = (S.pace[g][k[0]] || 0) + (+k[1]); save(); keepScroll(renderGrown); }));
+    $('#loopcopy').addEventListener('click', () => { const ta = $('#loopcode'); const txt = ta.value;
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(() => toast('Code copied'), () => { ta.select(); fallbackCopy(txt); }); else fallbackCopy(txt); });
     const conf = (b, fn) => b.addEventListener('click', () => { if (!b.dataset.sure) { b.dataset.sure = '1'; b.textContent = 'Tap again to confirm'; return; } fn(); save(); updateTop(); renderGrown(); toast('Reset done'); });
     conf($('#rs1'), () => { S.g[g] = blankGrade(); });
     conf($('#rsall'), () => { const th = S.theme; localStorage.removeItem(KEY); S = load(); S.theme = th; S.grade = g; });

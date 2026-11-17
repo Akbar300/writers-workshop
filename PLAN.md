@@ -74,6 +74,8 @@ printables (blank organizer + draft page with starters, example sheet, editing c
 
 ## Files
 - `js/checks.js`: automatic draft checks (pure functions; runs in Node for tests).
+- `js/content-more.js`: round 2 content, appended onto the content.js lists.
+- `js/units.js`: FCPS unit prompts (`window.WW_UNITS[3|5]`).
 - `js/content.js`: all content for both grades (`window.WW_DATA[3]` and `[5]`): sentence banks,
   paragraph activities, fix-it pieces, and the three writing types (plan fields, parts, starters,
   example paragraphs, prompts).
@@ -105,6 +107,23 @@ Build notes (second pass):
 - Questions come from per-session shuffled pools, so nothing repeats until a pool is used up.
 - Grade 3 "Type it right" is built from short `sents` (no retype bank), as the handoff notes say.
 - `checks.js`: "reasons" now counts as giving reasons (the Grade 5 opinion model was flagged).
+
+Round 2 (Nov 17, 2026, Claude review of the first build):
+- [x] Content tripled in `js/content-more.js` (APPEND ONLY: item keys are positional). Paragraph Builder
+  8-10 per activity per grade, Fix This Writing 6 pieces per grade (new ones follow FCPS units:
+  water cycle, Egypt, class vote, maps; Constitution, Olympics, rivers and landforms, robot fair),
+  Grade 5 Type it right / combining / possessives / transitions / homophones / verbs to 15 each,
+  more dialogue for both grades.
+- [x] Class-unit prompts (`js/units.js`): one prompt per writing type for every FCPS unit through June,
+  shown first in Write a Piece as "From class right now". Dates are estimates; Grown-ups → Class units
+  nudges a subject earlier or later (`S.pace`).
+- [x] Check step shows fixes 3 at a time, quick wins first (capitals, I, end marks, slips...), then
+  sentence fixes, then length and paragraphs. A "🔒 N more" line shows what is left.
+- [x] Weekend Loop feed: Grown-ups → Send to Weekend Loop makes a `WW1.` paste code
+  (`WWLoop.payload(g)`): `ww_<skill>` = last 6 first-try results, `ww_w_<check>` = what the auto-check caught
+  on the FIRST check of each typed draft (sentence-level checks only; length and paragraphs are not
+  logged because drafts are often unfinished). Weekend Loop imports it in Grown-ups → Miss log.
+- [x] Small fixes: Grown-ups skill table fits a phone; non-word distractor "youre" replaced.
 
 ## Handoff notes (for whoever builds the rest)
 Data shapes in `js/content.js` (`WW_DATA[3]`, `WW_DATA[5]`):

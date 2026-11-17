@@ -547,3 +547,15 @@ body:not(.focus) .act-foot { bottom: calc(var(--navh) + env(safe-area-inset-bott
 @media (min-width: 1100px) and (min-height: 950px) { .skills-card .mm:nth-child(n+7) { display: grid; } }
 .choices.row.words .choice, .act.multi .choices.row.words .choice { font-size: 1.08rem; padding: 10px 8px; }
 @media (min-width: 1100px) { .choices.row.words .choice { font-size: 1.2rem; } }
+
+/* ---------- round 2 additions (Nov 2026) */
+.unit-h { font-size: 1rem; margin: 14px 0 6px; color: var(--muted); font-weight: 800; }
+.choice.unit .u-tag { display: block; font-size: .72rem; font-weight: 800; letter-spacing: .02em; color: var(--teal); margin-bottom: 3px; text-transform: uppercase; }
+.ck-more { display: flex; flex-wrap: wrap; gap: 8px 14px; margin: 8px 2px 4px; font-size: .9rem; color: var(--muted); font-weight: 700; }
+.unit-t { width: 100%; border-collapse: collapse; }
+.unit-t td { padding: 7px 4px; border-top: 1px solid var(--line); vertical-align: middle; }
+.unit-t td b { display: block; } .unit-t td .small { display: block; color: var(--muted); }
+.unit-t td.nw { white-space: nowrap; text-align: right; } .unit-t .small-btn + .small-btn { margin-left: 6px; }
+.unit-t .small-btn[disabled] { opacity: .4; }
+.code-box { width: 100%; font: 12px/1.35 ui-monospace, SFMono-Regular, Menlo, monospace; border: 1px solid var(--line); border-radius: 10px; padding: 8px; background: var(--surface2); color: inherit; resize: none; word-break: break-all; }
+@media (max-width: 560px) { .prog-t th:nth-child(2), .prog-t td:nth-child(2) { display: none; } }

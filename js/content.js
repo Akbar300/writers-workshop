@@ -270,7 +270,7 @@
         ['Put the books over ___.', 'there', ['their', "they're"], 'there = a place.'],
         ['The dog wagged ___ tail.', 'its', ["it's", "its'"], 'its = belongs to it. No apostrophe.'],
         ['___ almost time for lunch.', "It's", ['Its', "Its'"], "It's = It is."],
-        ['Is this ___ jacket?', 'your', ["you're", 'youre'], 'your = belongs to you.'],
+        ['Is this ___ jacket?', 'your', ["you're", 'yours'], 'your = belongs to you.'],
         ['___ the fastest runner on the team.', "You're", ['Your', 'Youre'], "You're = You are."],
         ['I ate ___ much candy.', 'too', ['to', 'two'], 'too = more than enough (or also).'],
         ['My sister is taller ___ I am.', 'than', ['then', 'that'], 'than compares. then tells when.'],

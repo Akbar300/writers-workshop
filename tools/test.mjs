@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = { window: {}, globalThis: null, console };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['js/content.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
+for (const f of ['js/content.js', 'js/content-more.js', 'js/units.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
 const D = ctx.WW_DATA; const C = ctx.WWChecks; const E = ctx.WWEngine;
 
 let pass = 0; const fails = [];
@@ -98,8 +98,18 @@ ok(has(run('One.\nTwo.', { minParas: 3 }), 'paras', 'fix') && has(run('One.\nTwo
 ok(has(run('I think pizza is good.', { because: true }), 'because', 'fix') && has(run('I think pizza is good because it is hot.', { because: true }), 'because', 'ok'), 'checks: because in opinions');
 ok(has(run(Array(40).fill('word').join(' ') + '.', { grade: 3 }), 'long', 'fix'), 'checks: long sentence');
 
+
+/* ---------- class units */
+const UN = ctx.WW_UNITS;
+for (const g of [3, 5]) {
+  ok(Array.isArray(UN[g]) && UN[g].length >= 10, 'G' + g + ' has class units');
+  UN[g].forEach((u, i) => ok(/^\d{4}-\d{2}-\d{2}$/.test(u.from) && u.subj && u.name && ['narrative', 'opinion', 'info'].every((t) => u.p[t] && u.p[t].length > 10), 'G' + g + ' unit ' + i + ' shape'));
+  const subs = {}; UN[g].forEach((u) => { (subs[u.subj] = subs[u.subj] || []).push(u.from); });
+  Object.entries(subs).forEach(([s, f]) => ok(f.every((x, i) => !i || x > f[i - 1]), 'G' + g + ' ' + s + ' units in date order'));
+}
+
 /* ---------- public repo hygiene */
-const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/checks.js', 'PLAN.md', 'README.md'];
+const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/content-more.js', 'js/units.js', 'js/checks.js', 'PLAN.md', 'README.md'];
 const banned = new RegExp(['ali' + 'ya', 'ars' + 'lan', 'bo' + 'mb'].join('|'), 'i');
 for (const f of files) { const p = path.join(ROOT, f); if (fs.existsSync(p)) ok(!banned.test(fs.readFileSync(p, 'utf8')), 'no private names or banned words in ' + f); }
 
