@@ -8,7 +8,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ctx = { window: {}, globalThis: null, console };
 ctx.window = ctx; ctx.globalThis = ctx;
 vm.createContext(ctx);
-for (const f of ['js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/units.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
+for (const f of ['js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/content-r4-g3.js', 'js/units.js', 'js/checks.js', 'js/app.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), ctx, { filename: f });
 const D = ctx.WW_DATA; const C = ctx.WWChecks; const E = ctx.WWEngine;
 
 let pass = 0; const fails = [];
@@ -113,6 +113,16 @@ ok(has(run('I ran ,fast.'), 'space', 'fix'), 'checks: spacing');
 ok(has(run('One.\nTwo.', { minParas: 3 }), 'paras', 'fix') && has(run('One.\nTwo.\nThree.', { minParas: 3 }), 'paras', 'ok'), 'checks: paragraphs split on line breaks');
 ok(has(run('I think pizza is good.', { because: true }), 'because', 'fix') && has(run('I think pizza is good because it is hot.', { because: true }), 'because', 'ok'), 'checks: because in opinions');
 ok(has(run(Array(40).fill('word').join(' ') + '.', { grade: 3 }), 'long', 'fix'), 'checks: long sentence');
+ok(has(run('I stayed home becase it rained.'), 'spell', 'fix') && !has(run('I stayed home because it rained.'), 'spell'), 'checks: common misspellings');
+ok(has(run('He has a bone but he but he wants more.'), 'echo', 'fix') && !has(run('We ran faster and faster.'), 'echo') && !has(run('She sang again and again.'), 'echo'), 'checks: copied-twice words');
+ok(has(run('The greedy Dog wanted the bone.', { grade: 3 }), 'midcap', 'tip') && !has(run('Dogs are loyal. My dog is Max.', { grade: 3 }), 'midcap'), 'checks: mid-sentence capitals');
+{ const t = 'The greediest character is the Dog because he should be grateful he has a bone but he but he wants a bigger bone from the other Dog but he has a bone. The kindest character is the ant because the the ant got saved by the dove then the ant saved the dove.';
+  const r = run(t, { grade: 3 }); ok(['long', 'double', 'echo', 'midcap'].every((id) => has(r, id)), 'checks: real Grade 3 paragraph flags long, double, echo, midcap'); }
+/* round 4 Grade 3 coverage */
+for (const id of ['runon', 'copy', 'compound', 'adjadv', 'homo', 'words', 'dict', 'affix']) ok(E.sources(3, id).length >= 15, 'G3 new skill ' + id + ' has 15+ items (' + E.sources(3, id).length + ')');
+for (const id of ['o-prove', 'o-explain', 'o-evidence', 'o-form', 'o-own']) ok(E.sources(3, id).length >= 12, 'G3 ' + id + ' has 12+ items (' + E.sources(3, id).length + ')');
+ok(!E.orgList(5).some((o) => o.id === 'o-form' || o.id === 'o-own'), 'Grade 3-only tiles stay hidden for Grade 5');
+ok(D[3].fix.length >= 9, 'G3 has 9+ Fix This Writing pieces');
 
 
 /* ---------- class units */
@@ -125,7 +135,7 @@ for (const g of [3, 5]) {
 }
 
 /* ---------- public repo hygiene */
-const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/units.js', 'js/checks.js', 'PLAN.md', 'README.md'];
+const files = ['index.html', 'css/app.css', 'js/app.js', 'js/content.js', 'js/content-more.js', 'js/content-r3-g5.js', 'js/content-r3-g5b.js', 'js/content-r3-g5c.js', 'js/content-r3-g3.js', 'js/content-r4-g3.js', 'js/units.js', 'js/checks.js', 'PLAN.md', 'README.md'];
 const banned = new RegExp(['ali' + 'ya', 'ars' + 'lan', 'bo' + 'mb'].join('|'), 'i');
 for (const f of files) { const p = path.join(ROOT, f); if (fs.existsSync(p)) ok(!banned.test(fs.readFileSync(p, 'utf8')), 'no private names or banned words in ' + f); }
 

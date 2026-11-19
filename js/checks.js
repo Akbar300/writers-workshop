@@ -120,6 +120,33 @@
     const hit = slips.filter((s) => new RegExp('\\b' + s[0] + '\\b').test(lower));
     if (hit.length) add('slips', 'fix', 'Fix these words:', hit.slice(0, 5).map((s) => s[0] + ' → ' + s[1]).join('   '));
 
+    /* 14. Spelling: high-frequency words young writers often miss (only sure misspellings, never real words) */
+    const spell = [
+      ['becase', 'because'], ['becuase', 'because'], ['beacuse', 'because'], ['becuz', 'because'], ['bcause', 'because'],
+      ['freind', 'friend'], ['frend', 'friend'], ['thier', 'their'], ['wich', 'which'], ['whitch', 'which'],
+      ['whent', 'went'], ['realy', 'really'], ['untill', 'until'], ['charactar', 'character'], ['charecter', 'character'],
+      ['gratful', 'grateful'], ['greatful', 'grateful'], ['greedyiest', 'greediest'], ['greedyest', 'greediest'],
+      ['favrit', 'favorite'], ['favorit', 'favorite'], ['sayed', 'said'], ['runned', 'ran'], ['goed', 'went'],
+      ['thay', 'they'], ['tomorow', 'tomorrow'], ['tommorow', 'tomorrow'], ['diffrent', 'different'], ['frist', 'first'],
+      ['beautifull', 'beautiful'], ['peeple', 'people'], ['wuz', 'was'], ['enuff', 'enough'], ['lern', 'learn']
+    ];
+    const sp = spell.filter((s) => new RegExp('\\b' + s[0] + '\\b').test(lower));
+    if (sp.length) add('spell', 'fix', 'Check the spelling of these words:', sp.slice(0, 5).map((s) => s[0] + ' → ' + s[1]).join('   '));
+
+    /* 15. Copy slips: the same word on both sides of a joining word ("he but he") */
+    const echo = [];
+    String(text).replace(/\b([A-Za-z]+)\s+(but|and|so|because|then)\s+\1\b/gi, (m, w) => {
+      if (!/^(more|again|over|round|on|out|by|up|down|back|less|bigger|faster|louder|higher|closer|better|worse|again)$/i.test(w)) echo.push(m);
+      return m;
+    });
+    if (echo.length) add('echo', 'fix', 'Did you copy a few words twice? Read it aloud and touch each word.', echo.slice(0, 3).map((x) => '“' + x + '”').join('  '));
+
+    /* 16. Capitals in the middle of a sentence on everyday words (a tip, because it might be a character's name) */
+    const COMMON = /^(dog|dogs|cat|cats|king|queen|bird|birds|ant|ants|dove|fox|hunter|bear|mouse|fish|bone|tree|river|water|school|teacher|friend|friends|character|story|book|animal|animals|people|house|ball|game|day|night|snow|sun|rain|food|family|class|man|woman|boy|girl|kid|kids|baby|farmer|monster|dragon|bug|bugs|frog|turtle|rabbit|wolf|lion|pig|horse|cow|duck|beetle|squirrel|owl|car|park|city|town)$/;
+    const midCaps = [];
+    sents.forEach((s) => { words(s).slice(1).forEach((w2) => { if (/^[A-Z][a-z]+$/.test(w2) && COMMON.test(w2.toLowerCase()) && midCaps.indexOf(w2) < 0) midCaps.push(w2); }); });
+    if (midCaps.length) add('midcap', 'tip', 'Check these capitals: in the middle of a sentence, only names, places, days, holidays, and I get capitals.', midCaps.slice(0, 4).join(', ') + ' (If it is a character\'s name, it can stay.)');
+
     /* Tips (never block publishing) */
     if (o.type === 'narrative' && grade >= 5 && q === 0 && allWords.length > 60) add('dialogue', 'tip', 'Tip: a line of dialogue can make your story come alive.', 'Example: “You can do it!” Maya shouted.');
     if (grade >= 5 && sents.length >= 5) {

@@ -29,7 +29,15 @@
       { id: 'adj', name: 'Comparing words', icon: '📏', rule: 'Add -er (or use more) to compare two things: taller, more careful. Add -est (or use most) to compare three or more: tallest, most careful. Watch out: good, better, best and bad, worse, worst.' },
       { id: 'neg', name: 'No double negatives', icon: '🚫', rule: 'Use only ONE no-word in a sentence (not, no, never, nothing, nobody, none). Say “I don\'t have any,” not “I don\'t have none.”' },
       { id: 'grow', name: 'Grow a sentence', icon: '🌱', rule: 'Make a sentence stronger by adding details that tell who, what kind, where, when, or how.' },
-      { id: 'spell', name: 'Spelling patterns', icon: '🔤', rule: 'Use the patterns you know: drop the silent e before -ing (bake, baking), double the last letter after a short vowel (hop, hopping), and change y to i before -es (baby, babies).' }
+      { id: 'spell', name: 'Spelling patterns', icon: '🔤', rule: 'Use the patterns you know: drop the silent e before -ing (bake, baking), double the last letter after a short vowel (hop, hopping), and change y to i before -es (baby, babies).' },
+      { id: 'runon', name: 'Run-ons', icon: '🚂', rule: 'A run-on jams two sentences together with no stop. Fix it with a period and a capital, or join the ideas with a comma plus and, but, or so. Read it aloud: if you run out of breath, it is probably a run-on.' },
+      { id: 'copy', name: 'Copy check', icon: '🔍', rule: 'Reread every sentence and touch each word. Look for a word written twice (the the, he but he), a missing word, a capital in the middle of a sentence, and a misspelled word.' },
+      { id: 'compound', name: 'Compound words', icon: '🧱', rule: 'A compound word is two small words joined into ONE word with no space: gold + fish = goldfish. Each small word keeps its spelling: wheel + chair = wheelchair.' },
+      { id: 'adjadv', name: 'Adjectives & adverbs', icon: '🎨', rule: 'An adjective describes a noun: what kind, how many, which one (a tiny mouse). An adverb describes a verb: how, when, or where (she ran quickly). Many adverbs end in -ly.' },
+      { id: 'homo', name: 'Sound-alike words', icon: '👂', rule: 'Homophones sound the same but mean different things: to (toward), too (also, or very), two (2); there (a place), their (belongs to them), they\'re (they are); hear (with your ear), here (a place); write, right; know, no.' },
+      { id: 'words', name: 'Best word', icon: '💎', rule: 'Pick the word that says exactly what you mean. Instead of said, try whispered or shouted. Instead of big, try huge or enormous. Some words are stronger than others: warm, hot, scorching.' },
+      { id: 'dict', name: 'ABC & dictionary', icon: '📖', rule: 'Dictionaries list words in ABC order. If the first letters match, look at the second letter, then the third. Guide words show the first and last word on a page. A dictionary gives meanings and spellings, a thesaurus gives words that mean the same, and a glossary is a mini dictionary in the back of a book.' },
+      { id: 'affix', name: 'Prefixes & suffixes', icon: '🧩', rule: 'A prefix goes at the start: un- (not), re- (again), pre- (before), dis- (not). A suffix goes at the end: -ful (full of), -less (without), -ly (in a way), -er (one who). Usually the base word keeps its spelling: hope + ful = hopeful.' },
     ],
     5: [
       { id: 'caps', name: 'Capitals', icon: '🔠', rule: 'Capitalize proper nouns: names, titles used with a name (Dr. Patel, Coach Rivera), places, buildings, books, days, months, and holidays.' },
@@ -65,7 +73,9 @@
     { id: 'o-explain', name: 'Explain it', icon: '💡', rule: 'After evidence, explain HOW it proves your point (This shows that…, Because of this…). Do not just repeat the evidence.' },
     { id: 'o-outline', name: 'Build the outline', icon: '🗺️', rule: 'An essay is a map: introduction with a claim, body paragraphs (one reason each, strongest last or in time order), then a conclusion that restates the claim.' },
     { id: 'o-intro', name: 'Hooks & conclusions', icon: '🎣', rule: 'A hook grabs the reader (a question, a surprising fact, a quick scene). A conclusion restates the claim in new words and leaves the reader with a final thought. Never start with “This essay is about…”' },
-    { id: 'o-prove', name: 'Prove it from the text', icon: '📜', rule: 'A full-credit reading answer has three parts: Answer the question in a complete sentence, give Evidence from the text (with the paragraph number), and Explain how the evidence proves your answer.' }
+    { id: 'o-prove', name: 'Prove it from the text', icon: '📜', rule: 'A full-credit reading answer has three parts: Answer the question in a complete sentence, give Evidence from the text (with the paragraph number), and Explain how the evidence proves your answer.' },
+    { id: 'o-form', name: 'Kinds of writing', icon: '📚', rule: 'A story (narrative) tells what happened, in order. An opinion piece tells what you think and gives reasons. An informational piece teaches facts about a topic.' },
+    { id: 'o-own', name: 'My own words', icon: '🗣️', rule: 'Quoting means copying the exact words inside quotation marks. Paraphrasing means telling the same idea in your own words. Either way, give credit: the title and the author.' },
   ];
   const ORG = ORG_ALL;
   const orgList = (g) => ORG_ALL.filter((o) => sources(g, o.id).length);
@@ -898,7 +908,7 @@
 
   function checkOpts(d) { const w = W(d); return { grade: S.grade, type: d.type, minParas: w.minParas, minWords: w.minWords, trans: w.trans, because: !!w.because }; }
   /* Quick wins first: conventions, then sentences, then size and structure. Shown 3 at a time. */
-  const FIX_ORDER = ['caps', 'i', 'end', 'slips', 'double', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers', 'because', 'trans', 'paras', 'words', 'variety'];
+  const FIX_ORDER = ['caps', 'i', 'end', 'slips', 'spell', 'double', 'echo', 'midcap', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers', 'because', 'trans', 'paras', 'words', 'variety'];
   const BATCH = 3;
   function checksHtml(d) {
     const r = root.WWChecks.run(draftText(d), checkOpts(d)); const w = W(d);
@@ -920,7 +930,7 @@
   function logChecks(d) {
     if (d.mode === 'paper' || d.chkLogged || !draftText(d).trim()) return;
     const r = root.WWChecks.run(draftText(d), checkOpts(d)); const L = P().wchk || (P().wchk = {});
-    const LOGGED = ['caps', 'i', 'end', 'slips', 'double', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers'];
+    const LOGGED = ['caps', 'i', 'end', 'slips', 'spell', 'double', 'echo', 'space', 'quotes', 'dialogue', 'andthen', 'long', 'openers'];
     r.items.forEach((x) => { if (x.level === 'tip' || LOGGED.indexOf(x.id) < 0) return; const a = L[x.id] || (L[x.id] = []); a.push(x.level === 'ok' ? 1 : 0); if (a.length > 6) a.shift(); });
     d.chkLogged = true; saveSoon();
   }
@@ -1071,7 +1081,7 @@
   /* ------------------------------------------------------------------ Weekend Loop feed */
   /* A paste code for the home Weekend Loop app (a separate page with its own database).
      Its Grown-ups page imports this and replaces its ww_* writing tags with these, so pasting twice is harmless. */
-  const CHK_NAMES = { caps: 'capital letters', i: 'capital I', end: 'end marks', slips: 'common slips', double: 'doubled words', space: 'spacing', quotes: 'quotation marks', dialogue: 'dialogue punctuation', andthen: '"and then" chains', long: 'very long sentences', openers: 'same sentence openers', because: 'reasons with because', trans: 'linking words', paras: 'paragraphs', words: 'length', variety: 'sentence variety' };
+  const CHK_NAMES = { caps: 'capital letters', i: 'capital I', end: 'end marks', slips: 'common slips', spell: 'spelling', double: 'doubled words', echo: 'repeated words', midcap: 'capitals in the middle', space: 'spacing', quotes: 'quotation marks', dialogue: 'dialogue punctuation', andthen: '"and then" chains', long: 'very long sentences', openers: 'same sentence openers', because: 'reasons with because', trans: 'linking words', paras: 'paragraphs', words: 'length', variety: 'sentence variety' };
   function loopPayload(g) {
     const p = S.g[g]; const tags = {}; const labels = {};
     const put = (id, arr, label) => { if (!arr || !arr.length) return; tags[id] = { m: arr.filter((x) => !x).length, h: arr.filter((x) => x).length, r: arr.slice(-6), last: isoToday() }; labels[id] = label; };

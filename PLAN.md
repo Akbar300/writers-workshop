@@ -176,3 +176,28 @@ Lessons from the sibling app g5-math-lab (same family, same users) to copy from 
 - iOS print: print a dedicated print container, not the live page.
 - Test on a 390px-wide phone screen: no sideways scroll, big tap targets, no hover-only actions.
 - Save drafts on every keystroke (debounced). Losing a typed story is the worst possible bug here.
+
+### Round 4 (Nov 18, 2026): close the Grade 3 gaps (from real graded work + a full scan of the 2024 SOL)
+Built on top of Round 3 (branch round3-skills-banks). Source of the gaps: a Grade 3 opinion paragraph
+(scored 2/2/3 on the class rubric), a compound-word study week, and a reading-response sheet, then a
+line-by-line check of the Virginia 2024 English SOL (3.W, 3.LU, 3.RV, 3.FFW, 3.DSR, 3.R) and the
+FCPS Benchmark Advance Unit 2-3 sequence.
+- [x] `js/content-r4-g3.js` (APPEND ONLY), loaded after `content-r3-g3.js`.
+- [x] 8 new Grade 3 Gym skills: Run-ons, Copy check, Compound words, Adjectives & adverbs, Sound-alike words,
+  Best word (precise words, shades of meaning, synonyms/antonyms), ABC & dictionary (ABC order, guide words,
+  dictionary vs thesaurus vs glossary, multiple meanings), Prefixes & suffixes.
+- [x] Bigger Grade 3 banks: verbs (irregular past, future, agreement), joining (and/but/so, comma place,
+  rearranging), commas (dates, addresses, letter greetings/closings), spelling (high-frequency words kids miss),
+  double negatives, grow a sentence, every Paragraph Builder activity (opinion paragraphs first).
+- [x] Organize It, Grade 3: Prove it 3 -> 21 (incl. "restate the question in a complete sentence"), Explain it
+  now on for Grade 3 (16), more evidence items with true-but-weak distractors, and two Grade 3-only tiles:
+  Kinds of writing (3.W.1A) and My own words (quote, paraphrase, give credit: 3.DSR.C, 3.R.1E).
+  Prove it items carry a long answer-plus-proof distractor so the right answer is never just the longest.
+- [x] 3 new Grade 3 Fix This Writing pieces built from real slips (wrong mid-sentence capitals, missing
+  comma before but/so, missing end marks, apostrophes, too/to, there/their, becase/lern).
+- [x] `checks.js`: new `spell` (sure misspellings: becase, charactar, gratful, freind...), `echo`
+  ("he but he" copied twice), and `midcap` tip (Dog, King mid-sentence). All three feed the Weekend Loop log
+  (`ww_w_spell`, `ww_w_echo`); midcap is a tip only, because a character's name may be capitalized.
+- Grade 3 playable items: 357 -> 755; Fix pieces 6 -> 9. Tests: 7368 pass. Browser-checked at 390px and 1440px.
+- Not in this app on purpose: long-vowel and other phonics sorts (Block Bakery Word Lab), reading-comprehension
+  question types (Reading Academy / Block Bakery Big Reads), cursive (handwriting printables).
